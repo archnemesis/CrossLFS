@@ -1,0 +1,26 @@
+#
+# sed: staging
+#
+build_sed() {
+    pushd build
+
+    rm -rf sed-4.9
+    tar xvf ../sources/sed-4.9.tar.xz
+
+    setup_environment
+
+    pushd sed-4.9
+    ./configure \
+        --prefix=/usr
+    make
+    make html
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    install -d -m755 $LFS_STAGING/usr/share/doc/sed-4.9
+    install -m644 doc/sed.html $LFS_STAGING/usr/share/doc/sed-4.9
+    popd # sed
+
+    post_build
+
+    popd # build
+}

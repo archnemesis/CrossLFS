@@ -1,0 +1,11 @@
+build_coreutils() {
+    pushd build
+
+    rm -rf coreutils-9.6
+    tar xvf ../sources/coreutils-9.6.tar.xz
+
+    pushd coreutils-9.6
+    popd
+
+    popd # build
+}

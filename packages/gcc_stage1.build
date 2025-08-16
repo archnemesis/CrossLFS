@@ -1,0 +1,57 @@
+build_gcc_stage1() {
+    print_info "=== Building GCC (stage 1) ==="
+
+    pushd build
+
+    rm -rf gcc-build-stage1
+    rm -rf gcc-14.2.0
+
+    mkdir gcc-build-stage1
+
+    tar xvf ../sources/gcc-14.2.0.tar.xz
+    tar xvf ../sources/gmp-6.3.0.tar.xz -C gcc-14.2.0
+    tar xvf ../sources/mpc-1.3.1.tar.gz -C gcc-14.2.0
+    tar xvf ../sources/mpfr-4.2.1.tar.xz -C gcc-14.2.0
+    
+    pushd gcc-14.2.0
+    mv gmp-6.3.0 gmp
+    mv mpc-1.3.1 mpc
+    mv mpfr-4.2.1 mpfr
+    popd
+    
+    pushd gcc-build-stage1
+    ../gcc-14.2.0/configure \
+        --prefix=$LFS_PREFIX \
+        --build=$LFS_BUILD \
+        --host=$LFS_BUILD \
+        --target=$LFS_TARGET \
+        --with-sysroot=$LFS_SYSROOT \
+        --with-newlib \
+        --with-native-system-header-dir=$LFS_PREFIX/include \
+        --disable-shared \
+        --with-mpfr=$LFS_PREFIX \
+        --with-gmp=$LFS_PREFIX \
+        --with-mpc=$LFS_PREFIX \
+        --without-headers \
+        --disable-decimal-float \
+        --disable-libgomp \
+        --disable-libssp \
+        --disable-libatomic \
+        --disable-libitm \
+        --disable-libsantizer \
+        --disable-libquadmath \
+        --disable-libvtv \
+        --disable-libcilkrts \
+        --disable-libstdc++-v3 \
+        --disable-threads \
+        --disable-multilib \
+        --enable-languages=c \
+        --with-glibc-version=2.41
+    make -j4 all-gcc
+    make -j4 all-target-libgcc
+    make install-gcc
+    make install-target-libgcc
+    popd
+
+    popd # build
+}

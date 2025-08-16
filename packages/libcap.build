@@ -1,0 +1,49 @@
+build_libcap() {
+    pushd build
+
+    rm -rf libcap-2.73
+    tar xvf ../sources/libcap-2.73.tar.xz
+
+    setup_environment
+
+    pushd libcap-2.73
+
+    sed -i '/install -m.*STA/d' libcap/Makefile
+    make \
+        prefix=/usr \
+        lib=lib \
+        CC=${CC} \
+        AR=${AR} \
+        RANLIB=${RANLIB} \
+        CROSS_COMPILE="${LFS_TARGET}-" \
+        SHARED=yes \
+        PTHREADS=yes libcap
+
+    make -C libcap \
+        prefix=/usr \
+        lib=lib \
+        CC=${CC} \
+        AR=${AR} \
+        RANLIB=${RANLIB} \
+        CROSS_COMPILE="${LFS_TARGET}-" \
+        SHARED=yes \
+        PTHREADS=yes \
+        DESTDIR=$LFS_SYSROOT install
+
+    make -C libcap \
+        prefix=/usr \
+        lib=lib \
+        CC=${CC} \
+        AR=${AR} \
+        RANLIB=${RANLIB} \
+        CROSS_COMPILE="${LFS_TARGET}-" \
+        SHARED=yes \
+        PTHREADS=yes \
+        DESTDIR=$LFS_STAGING install
+
+    popd # libcap
+
+    post_build
+
+    popd # build
+}

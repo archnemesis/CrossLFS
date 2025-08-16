@@ -1,0 +1,19 @@
+build_zlib() {
+    pushd build
+
+    rm -rf zlib-1.3.1
+    tar xvf ../sources/zlib-1.3.1.tar.gz
+    
+    setup_environment
+
+    pushd zlib-1.3.1
+    ./configure --prefix=/usr
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    popd # zlib
+
+    post_build
+
+    popd # build
+}

@@ -1,0 +1,22 @@
+build_acl() {
+    pushd build
+
+    rm -rf acl-2.3.2
+    tar xvf ../sources/acl-2.3.2.tar.xz
+
+    setup_environment
+
+    pushd acl-2.3.2
+    ./configure \
+        --prefix=/usr \
+        --disable-static \
+        --docdir=/usr/share/doc/acl-2.3.2
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    popd # acl
+    
+    post_build
+
+    popd # build
+}

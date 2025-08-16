@@ -1,0 +1,19 @@
+build_grep() {
+    pushd build
+
+    rm -rf grep-3.11
+    tar xvf ../sources/grep-3.11.tar.xz
+
+    setup_environment
+
+    pushd grep-3.11
+    ./configure \
+        --prefix=/usr
+    make
+    make DESTDIR=$LFS_STAGING install
+    popd # grep
+
+    post_build
+
+    popd # build
+}

@@ -1,0 +1,24 @@
+build_libxcrypt() {
+    pushd build
+
+    rm -rf libxcrypt-4.4.38
+    tar xvf ../sources/libxcrypt-4.4.38.tar.xz
+
+    setup_environment
+
+    pushd libxcrypt-4.4.38
+    ./configure \
+        --prefix=/usr \
+        --enable-hashes=strong,glibc \
+        --enable-obsolete-api=no \
+        --disable-static \
+        --disable-failure-tokens
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    popd # libxcrypt
+
+    post_build
+
+    popd # build
+}

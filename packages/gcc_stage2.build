@@ -1,0 +1,50 @@
+build_gcc_stage2() {
+    print_info "=== Building GCC (stage 2) ==="
+
+    pushd build
+
+    rm -rf gcc-14.2.0
+    rm -rf gcc-build-stage2
+    
+    mkdir gcc-build-stage2
+
+    tar xvf ../sources/gcc-14.2.0.tar.xz
+    tar xvf ../sources/gmp-6.3.0.tar.xz -C gcc-14.2.0
+    tar xvf ../sources/mpc-1.3.1.tar.gz -C gcc-14.2.0
+    tar xvf ../sources/mpfr-4.2.1.tar.xz -C gcc-14.2.0
+    
+    pushd gcc-14.2.0
+    mv gmp-6.3.0 gmp
+    mv mpc-1.3.1 mpc
+    mv mpfr-4.2.1 mpfr
+    popd
+
+    pushd gcc-build-stage2
+
+    LDFLAGS="-Wl,-rpath,$LFS_PREFIX/lib" \
+    ../gcc-14.2.0/configure \
+        --target=$LFS_TARGET \
+        --prefix=$LFS_PREFIX \
+        --sysconfdir=$LFS_PREFIX/etc \
+        --with-sysroot=$LFS_SYSROOT \
+        --disable-nls \
+        --disable-multilib \
+        --enable-static \
+        --enable-languages=c,c++ \
+        --enable-plugins \
+        --enable-lto \
+        --with-gnu-ld \
+        --disable-libssp \
+        --enable-__cxa_atexit \
+        --with-pkgversion="Cross LFS 12.3" \
+        --without-zstd
+
+    make -j4
+    make install
+
+    cp -vP $LFS_PREFIX/$LFS_TARGET/lib64/* $LFS_SYSROOT/lib64/
+    cp -vP $LFS_PREFIX/$LFS_TARGET/lib64/* $LFS_STAGING/lib64/
+
+    popd # gcc-build-stage2
+    popd # build
+}

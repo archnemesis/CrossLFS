@@ -1,0 +1,21 @@
+#
+# psmisc: staging
+# 
+build_psmisc() {
+    pushd build
+    rm -rf psmisc-23.7
+    tar xvf ../sources/psmisc-23.7.tar.xz
+    
+    setup_environment
+
+    pushd psmisc-23.7
+    ./configure \
+        --prefix=/usr
+    make
+    make DESTDIR=$LFS_STAGING install
+    popd # psmisc
+
+    post_build
+
+    popd # build
+}

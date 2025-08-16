@@ -1,0 +1,22 @@
+build_gettext() {
+    pushd build
+
+    rm -rf gettext-0.24
+    tar xvf ../sources/gettext-0.24.tar.xz
+
+    setup_environment
+
+    pushd gettext-0.24
+    ./configure \
+        --prefix=/usr \
+        --disable-static \
+        --docdir=/usr/share/doc/gettext-0.24
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    popd # gettext
+
+    relocate_la
+
+    popd # build
+}

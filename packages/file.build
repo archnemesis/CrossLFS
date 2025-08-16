@@ -1,0 +1,20 @@
+build_file() {
+    pushd build
+
+    rm -rf file-5.46
+    tar xvf ../sources/file-5.46.tar.gz
+
+    setup_environment
+
+    pushd file-5.46
+    ./configure  \
+        --prefix=/usr
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    popd # file
+
+    post_build
+
+    popd
+}

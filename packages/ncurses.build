@@ -1,0 +1,33 @@
+build_ncurses() {
+    pushd build
+
+    rm -rf ncurses-6.5
+    tar xvf ../sources/ncurses-6.5.tar.gz
+
+    setup_environment
+
+    pushd ncurses-6.5
+
+    ./configure \
+        --prefix=/usr \
+        --with-shared \
+        --without-debug \
+        --enable-widec \
+        --enable-pc-files
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    
+    for lib in ncurses form panel menu ; do
+        ln -sfv lib${lib}w.so $LFS_SYSROOT/usr/lib/lib${lib}.so
+        ln -sfv ${lib}w.pc    $LFS_SYSROOT/usr/lib/pkgconfig/${lib}.pc
+        ln -sfv lib${lib}w.so $LFS_STAGING/usr/lib/lib${lib}.so
+        ln -sfv ${lib}w.pc    $LFS_STAGING/usr/lib/pkgconfig/${lib}.pc
+    done
+    
+    popd # ncurses
+
+    post_build
+
+    popd # build
+}

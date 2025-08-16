@@ -1,0 +1,24 @@
+build_binutils() {
+    print_info "=== Building binutils ==="
+
+    pushd build
+    rm -rf binutils-build
+    rm -rf binutils-2.44
+
+    tar xvf ../sources/binutils-2.44.tar.xz
+
+    mkdir binutils-build
+    
+    pushd binutils-build
+    ../binutils-2.44/configure \
+        --target=$LFS_TARGET \
+        --prefix=$LFS_PREFIX \
+        --with-sysroot=$LFS_SYSROOT \
+        --disable-nls \
+        --disable-werror
+    make -j4
+    make install
+    popd
+
+    popd # build
+}

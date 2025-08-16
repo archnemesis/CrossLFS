@@ -1,0 +1,37 @@
+build_glibc() {
+    print_info "=== Building glibc ==="
+
+    pushd build
+
+    rm -rf glibc-2.41
+    rm -rf glibc-build
+
+    tar xvf ../sources/glibc-2.41.tar.xz
+    mkdir glibc-build
+
+    pushd glibc-build
+
+    setup_environment
+
+    ../glibc-2.41/configure \
+        --prefix=/usr \
+        --host=$LFS_TARGET \
+        --build=$LFS_BUILD \
+        --with-headers=$LFS_SYSROOT/usr/include \
+        --with-binutils=$LFS/host/bin \
+        --enable-kernel=6.13 \
+        CROSS_COMPILE=$LFS_TARGET
+
+    make -j4
+    make install DESTDIR="${LFS_SYSROOT}"
+    make install DESTDIR="${LFS_STAGING}"
+
+    rm -rfv $LFS_STAGING/usr/include/*
+    rm -rfv $LFS_STAGING/usr/lib64/*.{a,la}
+
+    unset CC CXX AR RANLIB AS LD
+
+    popd
+
+    popd # build
+}

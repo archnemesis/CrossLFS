@@ -1,0 +1,14 @@
+build_linux_headers() {
+    echo "=== Building linux-headers ==="
+
+    pushd build
+    tar xvf ../sources/linux-6.13.4.tar.xz
+    
+    pushd linux-6.13.4
+    make mrproper
+    make ARCH=$LFS_ARCH INSTALL_HDR_PATH="${LFS_SYSROOT}/usr" headers_install
+    popd
+
+    popd # build
+}
+

@@ -1,0 +1,20 @@
+build_bzip2() {
+    pushd build
+
+    rm -rf bzip2-1.0.8
+    tar xvf ../sources/bzip2-1.0.8.tar.gz
+
+    setup_environment
+
+    pushd bzip2-1.0.8
+    make -f Makefile-libbz2_so CC=${CC} LD=${LD}
+    make clean
+    make CC=${CC} LD=${LD}
+    make PREFIX=$LFS_SYSROOT install
+    make PREFIX=$LFS_STAGING install
+    popd # bzip2
+    
+    post_build
+
+    popd # build
+}
