@@ -1,0 +1,46 @@
+build_util_linux() {
+    download_source https://www.kernel.org/pub/linux/utils/util-linux/v2.40/util-linux-2.40.4.tar.xz
+
+    pushd build
+    
+    rm -rf util-linux-2.40.4
+    tar xvf ../sources/util-linux-2.40.4.tar.xz
+
+    setup_environment
+
+    pushd util-linux-2.40.4
+    ./configure \
+        --bindir=/usr/bin     \
+        --libdir=/usr/lib     \
+        --runstatedir=/run    \
+        --sbindir=/usr/sbin   \
+        --disable-chfn-chsh   \
+        --disable-login       \
+        --disable-nologin     \
+        --disable-su          \
+        --disable-setpriv     \
+        --disable-runuser     \
+        --disable-pylibmount  \
+        --disable-liblastlog2 \
+        --disable-static      \
+        --without-python      \
+        --without-systemd     \
+        --without-libmagic    \
+        --without-ncurses     \
+        --without-ncursesw    \
+        --without-tinfo       \
+        --enable-libblkid     \
+        --enable-libuuid      \
+        --enable-libmount     \
+        --without-systemdsystemunitdir        \
+        ADJTIME_PATH=/var/lib/hwclock/adjtime \
+        --docdir=/usr/share/doc/util-linux-2.40.4
+    make
+    fakeroot make DESTDIR=$LFS_SYSROOT install
+    fakeroot make DESTDIR=$LFS_STAGING install
+    popd # util-linux
+
+    post_build
+
+    popd # build
+}

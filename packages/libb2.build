@@ -1,0 +1,22 @@
+build_libb2() {
+    download_source https://github.com/BLAKE2/libb2/releases/download/v0.98.1/libb2-0.98.1.tar.gz
+
+    pushd build
+
+    rm -rf libb2-0.98.1
+    tar xvf ../sources/libb2-0.98.1.tar.gz
+    
+    setup_environment
+
+    pushd libb2-0.98.1
+    ./configure \
+        --prefix=/usr
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    popd # libb2
+
+    post_build
+
+    popd # build
+}

@@ -3,9 +3,29 @@ build_coreutils() {
 
     rm -rf coreutils-9.6
     tar xvf ../sources/coreutils-9.6.tar.xz
+    
+    setup_environment
 
     pushd coreutils-9.6
-    popd
+    
+    autoreconf -fv
+    automake -af
+    
+    FORCE_UNSAFE_CONFIGURE=1 ./configure \
+        --prefix=/usr            \
+        --enable-no-install-program=kill,uptime
+    
+    make
+
+    for d in $LFS_SYSROOT $LFS_STAGING; do
+        make DESTDIR=$d install
+        mv -v $d/usr/share/man/man1/chroot.1 $d/usr/share/man/man8/chroot.8
+        sed -i 's/"1"/"8"/' $d/usr/share/man/man8/chroot.8
+    done
+
+    popd # coreutils
+    
+    post_build
 
     popd # build
 }

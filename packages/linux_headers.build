@@ -1,5 +1,5 @@
 build_linux_headers() {
-    echo "=== Building linux-headers ==="
+    download_source https://www.kernel.org/pub/linux/kernel/v6.x/linux-6.13.4.tar.xz
 
     pushd build
     tar xvf ../sources/linux-6.13.4.tar.xz

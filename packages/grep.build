@@ -1,4 +1,6 @@
 build_grep() {
+    download_source https://ftp.gnu.org/gnu/grep/grep-3.11.tar.xz
+
     pushd build
 
     rm -rf grep-3.11

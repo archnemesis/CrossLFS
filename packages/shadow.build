@@ -1,4 +1,6 @@
 build_shadow() {
+    download_source https://github.com/shadow-maint/shadow/releases/download/4.17.3/shadow-4.17.3.tar.xz
+
     pushd build
 
     rm -rf shadow-4.17.3

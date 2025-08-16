@@ -1,4 +1,6 @@
 build_libcap() {
+    download_source https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.73.tar.xz
+
     pushd build
 
     rm -rf libcap-2.73

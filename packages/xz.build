@@ -1,0 +1,24 @@
+build_xz() {
+    download_source https://github.com//tukaani-project/xz/releases/download/v5.6.4/xz-5.6.4.tar.xz
+
+    pushd build
+
+    rm -rf xz-5.6.4
+    tar xvf ../sources/xz-5.6.4.tar.xz
+    
+    setup_environment
+
+    pushd xz-5.6.4
+    ./configure \
+        --prefix=/usr \
+        --disable-static \
+        --docdir=/usr/share/doc/xz-5.6.4
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    popd # xz
+
+    post_build
+
+    popd # build
+}

@@ -1,16 +1,18 @@
 build_expat() {
+    download_source https://github.com/libexpat/libexpat/releases/download/R_2_7_1/expat-2.7.1.tar.xz
+
     pushd build
 
-    rm -rf expat-2.6.4
-    tar xvf ../sources/expat-2.6.4.tar.xz
+    rm -rf expat-2.7.1
+    tar xvf ../sources/expat-2.7.1.tar.xz
 
     setup_environment
 
-    pushd expat-2.6.4
+    pushd expat-2.7.1
     ./configure \
         --prefix=/usr \
         --disable-static \
-        --docdir=/usr/share/doc/expat-2.6.4
+        --docdir=/usr/share/doc/expat-2.7.1
     make
     make DESTDIR=$LFS_SYSROOT install
     make DESTDIR=$LFS_STAGING install

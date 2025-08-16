@@ -1,4 +1,6 @@
 build_bash() {
+    download_source https://ftp.gnu.org/gnu/bash/bash-5.2.37.tar.gz
+
     pushd build
 
     rm -rf bash-5.2.37

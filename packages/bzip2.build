@@ -1,4 +1,6 @@
 build_bzip2() {
+    download_source https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz
+
     pushd build
 
     rm -rf bzip2-1.0.8

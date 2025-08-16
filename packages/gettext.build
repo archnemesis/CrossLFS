@@ -1,4 +1,6 @@
 build_gettext() {
+    download_source https://ftp.gnu.org/gnu/gettext/gettext-0.24.tar.xz
+
     pushd build
 
     rm -rf gettext-0.24

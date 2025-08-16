@@ -1,0 +1,41 @@
+build_python() {
+    download_source https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz
+    download_source https://www.python.org/ftp/python/doc/3.13.7/python-3.13.7-docs-html.tar.bz2
+
+    pushd build
+
+    rm -rf Python-3.13.7
+    tar xvf ../sources/Python-3.13.7.tar.xz
+    
+    setup_environment
+
+    pushd Python-3.13.7
+    
+    ./configure --prefix=/usr \
+        --enable-shared \
+        --with-system-expat \
+        --enable-optimizations
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    
+    cat > $LFS_STAGING/etc/pip.conf << EOF
+[global]
+root-user-action = ignore
+disable-pip-version-check = true
+EOF
+
+    install -v -dm755 $LFS_STAGING/usr/share/doc/python-3.13.7/html
+
+    tar --strip-components=1  \
+        --no-same-owner       \
+        --no-same-permissions \
+        -C $LFS_STAGING/usr/share/doc/python-3.13.7/html \
+        -xvf ../../sources/python-3.13.7-docs-html.tar.bz2
+
+    popd # Python
+
+    post_build
+
+    popd # build
+}

@@ -1,0 +1,20 @@
+build_cryptopp() {
+    download_source https://github.com/weidai11/cryptopp/archive/refs/tags/CRYPTOPP_8_9_0.tar.gz
+
+    pushd build
+
+    rm -rf cryptopp-CRYPTOPP_8_9_0
+    tar xvf ../sources/CRYPTOPP_8_9_0.tar.gz
+    
+    setup_environment
+
+    pushd cryptopp-CRYPTOPP_8_9_0
+    make PREFIX=/usr shared libcryptopp.pc
+    make PREFIX=/usr DESTDIR=$LFS_SYSROOT LDCONFIG=/bin/true install-lib
+    make PREFIX=/usr DESTDIR=$LFS_STAGING LDCONFIG=/bin/true install-lib
+    popd # CRYPTOPP
+
+    post_build
+
+    popd # build
+}

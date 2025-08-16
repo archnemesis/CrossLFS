@@ -1,4 +1,6 @@
 build_ncurses() {
+    download_source https://invisible-mirror.net/archives/ncurses/ncurses-6.5.tar.gz
+
     pushd build
 
     rm -rf ncurses-6.5

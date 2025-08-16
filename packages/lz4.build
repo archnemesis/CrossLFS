@@ -1,0 +1,20 @@
+build_lz4() {
+    download_source https://github.com/lz4/lz4/releases/download/v1.10.0/lz4-1.10.0.tar.gz
+    
+    pushd build
+
+    rm -rf lz4-1.10.0
+    tar xvf ../sources/lz4-1.10.0.tar.gz
+    
+    setup_environment
+
+    pushd lz4-1.10.0
+    make BUILD_STATIC=no PREFIX=/usr
+    make BUILD_STATIC=no PREFIX=/usr DESTDIR=$LFS_SYSROOT install
+    make BUILD_STATIC=no PREFIX=/usr DESTDIR=$LFS_STAGING install
+    popd # lz4
+
+    post_build
+
+    popd # build
+}

@@ -1,0 +1,30 @@
+build_inetutils() {
+    download_source https://ftp.gnu.org/gnu/inetutils/inetutils-2.6.tar.xz
+
+    pushd build
+
+    rm -rf inetutils-2.6
+    tar xvf ../sources/inetutils-2.6.tar.xz
+    
+    setup_environment
+
+    pushd inetutils-2.6
+    ./configure \
+        --prefix=/usr        \
+        --bindir=/usr/bin    \
+        --localstatedir=/var \
+        --disable-logger     \
+        --disable-whois      \
+        --disable-rcp        \
+        --disable-rexec      \
+        --disable-rlogin     \
+        --disable-rsh        \
+        --disable-servers
+    make
+    make DESTDIR=$LFS_STAGING install
+    popd # inetutils
+    
+    post_build
+
+    popd # build
+}

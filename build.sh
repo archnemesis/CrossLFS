@@ -6,6 +6,11 @@
 set -e
 set -x
 
+if [ ! -f build.config ]; then
+    echo "error: no build.config"
+    exit 1
+fi
+
 source build.config
 
 LFS=$(pwd)
@@ -14,6 +19,8 @@ LFS_TARGET="${LFS_ARCH}-lfs-linux-gnu"
 LFS_PREFIX=$LFS/host
 LFS_SYSROOT=$LFS/host/$LFS_TARGET/sysroot
 LFS_STAGING=$LFS/target
+
+MAKE="make -j4"
 
 export PATH=$LFS/host/bin:$LFS/host/usr/bin:$PATH
 
@@ -60,6 +67,7 @@ show_config() {
 }
 
 clean() {
+    rm -rf sources/*
     rm -rf host/*
     rm -rf build/*
     rm -rf target/*
@@ -85,6 +93,28 @@ print_error() {
     fi
     
     printf '%s[ERROR]%s %s\n' "$R" "$N" "$*" >&2
+}
+
+#
+# download a source package
+#
+download_source() {
+    local url="${1}"
+    local filename=$(basename $url)
+
+    if [ ! -f "sources/${filename}" ]; then
+        wget $url -P sources
+    fi
+}
+
+#
+# download all source packages
+#
+download_all_sources() {
+    for f in packages/*.build; do
+        local cmd=$(cat $f | grep download_source)
+        if [ ! -z "${cmd}" ]; then $cmd; fi
+    done
 }
 
 #
@@ -144,7 +174,7 @@ setup_dirs() {
 #
 build_package() {
     local pkg="${1}"
-    local fn="build_${pkg}"
+    local fn="$(echo "build_${pkg}" | sed -e "s/-/_/g")"
 
     if ! declare -F "${fn}" >/dev/null; then
         echo "error: package '${pkg}' is not defined" >&2
@@ -172,6 +202,10 @@ main() {
             show_config
             exit 0
             ;;
+        download-all)
+            download_all_sources
+            exit 0
+            ;;
         bootstrap)
             setup_dirs
             build_linux_headers
@@ -183,7 +217,7 @@ main() {
             ;;
         build-all)
             for package in ${LFS_PACKAGES[@]}; do
-                build_package $package
+                 build_package $package
             done
             exit 0
             ;;
@@ -200,7 +234,7 @@ main() {
             fi
       
             # Sanitize name to avoid weird function names
-            [[ "${name}" =~ ^[A-Za-z0-9_]+$ ]] || {
+            [[ "${name}" =~ ^[A-Za-z0-9_\-]+$ ]] || {
                 echo "error: invalid build name '${name}'" >&2
                 exit 1
             }

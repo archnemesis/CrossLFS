@@ -2,6 +2,8 @@
 # sed: staging
 #
 build_sed() {
+    download_source https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz
+
     pushd build
 
     rm -rf sed-4.9

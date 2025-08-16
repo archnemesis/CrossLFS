@@ -1,5 +1,5 @@
 build_binutils() {
-    print_info "=== Building binutils ==="
+    download_source https://sourceware.org/pub/binutils/releases/binutils-2.44.tar.xz
 
     pushd build
     rm -rf binutils-build

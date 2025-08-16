@@ -1,4 +1,6 @@
 build_readline() {
+    download_source https://ftp.gnu.org/gnu/readline/readline-8.2.13.tar.gz
+
     pushd build
 
     rm -rf readline-8.2.13.tar.gz

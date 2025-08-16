@@ -1,4 +1,6 @@
 build_attr() {
+    download_source https://download.savannah.gnu.org/releases/attr/attr-2.5.2.tar.gz
+
     pushd build
 
     rm -rf attr-2.5.2

@@ -1,4 +1,6 @@
 build_libxcrypt() {
+    download_source https://github.com/besser82/libxcrypt/releases/download/v4.4.38/libxcrypt-4.4.38.tar.xz
+
     pushd build
 
     rm -rf libxcrypt-4.4.38

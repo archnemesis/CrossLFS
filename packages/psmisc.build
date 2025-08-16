@@ -2,6 +2,8 @@
 # psmisc: staging
 # 
 build_psmisc() {
+    download_source https://sourceforge.net/projects/psmisc/files/psmisc/psmisc-23.7.tar.xz
+
     pushd build
     rm -rf psmisc-23.7
     tar xvf ../sources/psmisc-23.7.tar.xz

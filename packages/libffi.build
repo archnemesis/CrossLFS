@@ -1,0 +1,24 @@
+build_libffi() {
+    download_source https://github.com/libffi/libffi/releases/download/v3.4.7/libffi-3.4.7.tar.gz
+    
+    pushd build
+
+    rm -rf libffi-3.4.7
+    tar xvf ../sources/libffi-3.4.7.tar.gz
+    
+    setup_environment
+
+    pushd libffi-3.4.7
+    ./configure \
+        --prefix=/usr \
+        --disable-static \
+        --with-gcc-arch=$LFS_ARCH
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    popd # libffi
+    
+    post_build
+
+    popd # build
+}

@@ -1,5 +1,5 @@
 build_glibc() {
-    print_info "=== Building glibc ==="
+    download_source https://ftp.gnu.org/gnu/glibc/glibc-2.41.tar.xz
 
     pushd build
 
