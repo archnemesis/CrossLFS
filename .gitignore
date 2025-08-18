@@ -1,0 +1,7 @@
+build
+target
+staging
+host
+rootfs
+sources
+package.log

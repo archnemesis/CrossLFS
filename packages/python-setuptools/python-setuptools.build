@@ -1,0 +1,19 @@
+build_python_setuptools() {
+    download_source https://files.pythonhosted.org/packages/18/5d/3bf57dcd21979b887f014ea83c24ae194cfcd12b9e0fda66b957c69d1fca/setuptools-80.9.0.tar.gz
+
+    pushd build
+
+    rm -rf setuptools-80.9.0
+    tar xvf ../sources/setuptools-80.9.0.tar.gz
+
+    setup_environment
+
+    pushd setuptools-80.9.0
+    python setup.py build
+    python setup.py install --prefix=$LFS_STAGING
+    popd # setuptools
+
+    post_build
+
+    popd # build
+}

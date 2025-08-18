@@ -1,0 +1,19 @@
+build_python_dateutil() {
+    download_source https://files.pythonhosted.org/packages/66/c0/0c8b6ad9f17a802ee498c46e004a0eb49bc148f2fd230864601a86dcf6db/python-dateutil-2.9.0.post0.tar.gz
+
+    pushd build
+
+    rm -rf python-dateutil-2.9.0.post0
+    tar xvf ../sources/python-dateutil-2.9.0.post0.tar.gz
+
+    setup_environment
+
+    pushd python-dateutil-2.9.0.post0
+    python setup.py build
+    python setup.py install --prefix=$LFS_STAGING
+    popd # dateutil
+
+    post_build
+
+    popd # build
+}

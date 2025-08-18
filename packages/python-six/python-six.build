@@ -1,0 +1,19 @@
+build_python_six() {
+    download_source https://files.pythonhosted.org/packages/94/e7/b2c673351809dca68a0e064b6af791aa332cf192da575fd474ed7d6f16a2/six-1.17.0.tar.gz
+
+    pushd build
+
+    rm -rf six-1.17.0
+    tar xvf ../sources/six-1.17.0.tar.gz
+
+    setup_environment
+
+    pushd six-1.17.0
+    python setup.py build
+    python setup.py install --prefix=$LFS_STAGING
+    popd # six
+
+    post_build
+
+    popd # build
+}

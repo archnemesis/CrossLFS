@@ -1,0 +1,19 @@
+build_python_botocore() {
+    download_source https://files.pythonhosted.org/packages/34/b2/23e4dc97d941dad612959664029f2eb843fd65ce58cc7b3c02f996b6357c/botocore-1.40.11.tar.gz
+
+    pushd build
+
+    rm -rf botocore-1.40.11
+    tar xvf ../sources/botocore-1.40.11.tar.gz
+
+    setup_environment
+
+    pushd botocore-1.40.11
+    python setup.py build
+    python setup.py install --prefix=$LFS_STAGING
+    popd # botocore
+
+    post_build
+
+    popd # build
+}

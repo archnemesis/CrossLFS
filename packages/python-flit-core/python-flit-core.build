@@ -9,12 +9,8 @@ build_python_flit_core() {
     setup_environment
 
     pushd flit_core-3.11.0
-    pip wheel -w dist --no-cache-dir --no-build-isolation --no-deps $(pwd)
-    pip install \
-        --upgrade \
-        --no-compile \
-        --target $LFS_STAGING/usr/lib/python3.13/site-packages \
-        flit_core
+    python -m flit_core.wheel
+    python bootstrap_install.py --installdir $LFS_STAGING/usr/lib/python-3.13/site-packages dist/flit_core-*.whl
     popd # flit_core
 
     post_build

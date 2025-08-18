@@ -1,0 +1,21 @@
+build_libconfuse() {
+    download_source https://github.com/libconfuse/libconfuse/releases/download/v3.3/confuse-3.3.tar.xz
+
+    pushd build
+
+    rm -rf confuse-3.3
+    tar xvf ../sources/confuse-3.3.tar.xz
+    
+    setup_environment
+
+    pushd confuse-3.3
+    ./configure --prefix=/usr
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    popd # confuse
+
+    post_build
+
+    popd # build
+}

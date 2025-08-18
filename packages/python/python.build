@@ -2,6 +2,8 @@ build_python() {
     download_source https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz
     download_source https://www.python.org/ftp/python/doc/3.13.7/python-3.13.7-docs-html.tar.bz2
 
+    requires libffi readline expat ncurses
+
     pushd build
 
     rm -rf Python-3.13.7
@@ -11,14 +13,37 @@ build_python() {
 
     pushd Python-3.13.7
     
+    ac_cv_have_long_long_format=yes \
+	ac_cv_buggy_getaddrinfo=no \
+	ac_cv_file__dev_ptmx=yes \
+	ac_cv_file__dev_ptc=yes \
+	ac_cv_working_tzset=yes \
+	py_cv_module_nis=n/a \
+    py_cv_module__codecs_cn=n/a \
+	py_cv_module__codecs_hk=n/a \
+	py_cv_module__codecs_iso2022=n/a \
+	py_cv_module__codecs_jp=n/a \
+	py_cv_module__codecs_kr=n/a \
+	py_cv_module__codecs_tw=n/a \
+    py_cv_module__decimal=n/a \
+    py_cv_module_unicodedata=yes \
     ./configure --prefix=/usr \
         --enable-shared \
-        --with-system-expat \
-        --enable-optimizations
+        --with-expat=system \
+        --with-openssl=$LFS_SYSROOT/usr \
+        --with-readline \
+        --with-system-ffi \
+        --disable-test-modules \
+        --disable-tk \
+        --disable-idle3 \
+        --disable-pyc-build \
+        --without-ensurepip
     make
     make DESTDIR=$LFS_SYSROOT install
     make DESTDIR=$LFS_STAGING install
     
+    ln -sfv python3 $LFS_STAGING/usr/bin/python
+
     cat > $LFS_STAGING/etc/pip.conf << EOF
 [global]
 root-user-action = ignore

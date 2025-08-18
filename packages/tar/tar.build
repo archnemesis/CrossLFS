@@ -1,0 +1,21 @@
+build_tar() {
+    download_source https://mirror.us-midwest-1.nexcess.net/gnu/tar/tar-1.35.tar.xz
+
+    pushd build
+
+    rm -rf tar-1.35
+    tar xvf ../sources/tar-1.35.tar.xz
+
+    setup_environment
+
+    pushd tar-1.35
+    ./configure --prefix=/usr
+    make
+    make DESTDIR=$LFS_STAGING install
+    make -C doc install-html docdir=$LFS_STAGING/usr/share/doc/tar-1.35
+    popd # tar
+
+    post_build
+
+    popd # build
+}

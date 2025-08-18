@@ -27,11 +27,12 @@ export PATH=$LFS/host/bin:$LFS/host/usr/bin:$PATH
 usage() {
   cat <<'EOF'
 Usage:
-  ./build.sh <config|bootstrap|clean|build-all|build> [name] [args...]
+  ./build.sh <config|bootstrap|make-image|clean|build-all|build> [name] [args...]
 
 Commands:
   config              Show configuration environment vars
   bootstrap           Run the bootstrap step
+  make-image          Create disk image from target
   clean               Clean artifacts
   build-all           Build all configured packages
   build <name> [...]  Build package <name> and add it to the target
@@ -53,8 +54,11 @@ setup_environment () {
     RANLIB="${LFS_TARGET}-ranlib"
     AS="${LFS_TARGET}-as"
     LD="${LFS_TARGET}-ld"
-    
-    export CC CXX AR RANLIB AS LD
+    CFLAGS=""
+    CXXFLAGS=""
+    LDFLAGS=""
+
+    export CC CXX AR RANLIB AS LD CFLAGS CXXFLAGS LDFLAGS
 }
 
 show_config() {
@@ -170,11 +174,37 @@ setup_dirs() {
 }
 
 #
+# called by package build function to build dependencies
+#
+requires() {
+    local packages="${@}"
+    local pkg=""
+
+    if [ "${skip}" == "--skip-requires" ]; then
+        return 0
+    fi
+
+    for pkg in $packages; do
+        if [ -z "$(cat package.log | grep "^${pkg}")" ]; then
+            build_package $pkg
+        fi
+    done
+}
+
+#
 # build and install a package
 #
 build_package() {
     local pkg="${1}"
+    local skip="${2}"
     local fn="$(echo "build_${pkg}" | sed -e "s/-/_/g")"
+
+    if [ -f "packages/${pkg}/${pkg}.build" ]; then
+        source "packages/${pkg}/${pkg}.build"
+    else
+        echo "error: package '${pkg}' is not defined" >&2
+        exit 1
+    fi
 
     if ! declare -F "${fn}" >/dev/null; then
         echo "error: package '${pkg}' is not defined" >&2
@@ -182,14 +212,28 @@ build_package() {
     fi
 
     "${fn}" "$@"
+    
+    if [ -z "$(cat package.log | grep "${pkg}")" ]; then
+        echo $pkg >> package.log
+    fi
 }
 
 #
-# source all package files
+# create the disk image
 #
-for f in packages/*; do
-    source $f
-done
+create_disk_image() {
+    local label="rootfs"
+    local img="output/rootfs.ext4"
+    
+    rm -rf output
+    mkdir -pv output
+    truncate -s 8G "${img}"
+    fakeroot mkfs.ext4 -F -L "${label}" -d "${LFS_STAGING}" "${img}"
+    genimage \
+        --config genimage.cfg \
+        --inputpath $LFS/output \
+        --outputpath $LFS/output
+}
 
 main() {
   local cmd="${1-}"
@@ -219,6 +263,10 @@ main() {
             for package in ${LFS_PACKAGES[@]}; do
                  build_package $package
             done
+            exit 0
+            ;;
+        make-image)
+            create_disk_image
             exit 0
             ;;
         clean)

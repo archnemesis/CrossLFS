@@ -1,0 +1,31 @@
+build_vim() {
+    download_source https://github.com/vim/vim/archive/v9.1.1646/vim-9.1.1646.tar.gz
+
+    pushd build
+
+    rm -rf vim-9.1.1646
+    tar xvf ../sources/vim-9.1.1646.tar.gz
+
+    setup_environment
+
+    pushd vim-9.1.1646
+    
+    echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
+    
+    ./configure \
+        --prefix=/usr \
+        --without-wayland
+    make
+    make DESTDIR=$LFS_STAGING install
+    
+    ln -sv vim $LFS_STAGING/usr/bin/vi
+    for L in  $LFS_STAGING/usr/share/man/{,*/}man1/vim.1; do
+        ln -sv vim.1 $(dirname $L)/vi.1
+    done
+
+    popd # vim-9.1
+
+    post_build
+
+    popd # build
+}

@@ -1,0 +1,26 @@
+build_python_boto3() {
+    requires \
+        python-botocore \
+        python-urllib3 \
+        python-dateutil \
+        python-six \
+        python-jmespath
+    
+    download_source https://files.pythonhosted.org/packages/1c/92/3ffa75ed0594ef289dde3dde9e1d62a496515313f11caee499a5dfd2241d/boto3-1.40.11.tar.gz
+
+    pushd build
+
+    rm -rf boto3-1.40.11
+    tar xvf ../sources/boto3-1.40.11.tar.gz
+
+    setup_environment
+
+    pushd boto3-1.40.11
+    python setup.py build
+    python setup.py install --prefix=$LFS_STAGING
+    popd # boto3
+
+    post_build
+
+    popd # build
+}
