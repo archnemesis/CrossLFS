@@ -1,0 +1,97 @@
+build_systemd() {
+    download_source https://github.com/systemd/systemd/archive/v257.3/systemd-257.3.tar.gz
+    
+    requires zstd libgcrypt libseccomp libidn2 libdwarf
+
+    pushd build
+
+    rm -rf systemd-257.3
+    tar xvf ../sources/systemd-257.3.tar.gz
+
+    setup_environment
+
+    pushd systemd-257.3
+
+    sed -e 's/GROUP="render"/GROUP="video"/' \
+        -e 's/GROUP="sgx", //'               \
+        -i rules.d/50-udev-default.rules.in
+    
+    sed -e "s%@TARGET_CC@%${CC}%g" \
+        -e "s%@TARGET_CXX@%${CXX}%g" \
+        -e "s%@TARGET_AR@%${AR}%g" \
+        -e "s%@TARGET_FC@%${FC}%g" \
+        -e "s%@TARGET_STRIP@%${STRIP}%g" \
+        -e "s%@TARGET_ARCH@%${LFS_ARCH}%g" \
+        -e "s%@TARGET_CPU@%$(GCC_TARGET_CPU)%g" \
+        -e "s%@TARGET_ENDIAN@%$(call qstrip,$(call LOWERCASE,$(BR2_ENDIAN)))%g" \
+        -e "s%@TARGET_FCFLAGS@%$(call make-sq-comma-list,$($(strip $(4))))%g" \
+        -e "s%@TARGET_CFLAGS@%$(call make-sq-comma-list,$($(strip $(1))))%g" \
+        -e "s%@TARGET_LDFLAGS@%$(call make-sq-comma-list,$($(strip $(3))))%g" \
+        -e "s%@TARGET_CXXFLAGS@%$(call make-sq-comma-list,$($(strip $(2))))%g" \
+        -e "s%@BR2_CMAKE@%$(BR2_CMAKE)%g" \
+        -e "s%@PKGCONF_HOST_BINARY@%$(HOST_DIR)/bin/pkgconf%g" \
+        -e "s%@HOST_DIR@%$(HOST_DIR)%g" \
+        -e "s%@STAGING_DIR@%$(STAGING_DIR)%g" \
+        -e "s%@STATIC@%$(if $(BR2_STATIC_LIBS),true,false)%g" \
+        $(TOPDIR)/support/misc/cross-compilation.conf.in
+
+    mkdir -p build
+    pushd build
+    meson setup .. \
+        --prefix=/usr \
+        --buildtype=release \
+        -Dcreate-log-dirs=false \
+        -Ddbus=disabled \
+        -Ddbus-interfaces-dir=no \
+        -Ddefault-compression='auto' \
+        -Ddefault-locale='C.UTF-8' \
+        -Ddefault-user-shell=/bin/sh \
+        -Dfirst-boot-full-preset=false \
+        -Didn=true \
+        -Dima=false \
+        -Dipe=false \
+        -Dkexec-path=/usr/sbin/kexec \
+        -Dkmod-path=/usr/bin/kmod \
+        -Dldconfig=false \
+        -Dlink-boot-shared=true \
+        -Dloadkeys-path=/usr/bin/loadkeys \
+        -Dman=disabled \
+        -Dmount-path=/usr/bin/mount \
+        -Dvcs-tag=false \
+        -Dmode=release \
+        -Dnspawn-locale='C.UTF-8' \
+        -Dnss-systemd=true \
+        -Dpasswdqc=disabled \
+        -Dlibfido2=disabled \
+        -Dquotacheck-path=/usr/sbin/quotacheck \
+        -Dquotaon-path=/usr/sbin/quotaon \
+        -Dsetfont-path=/usr/bin/setfont \
+        -Dsplit-bin=true \
+        -Dsulogin-path=/usr/sbin/sulogin \
+        -Dsystem-gid-max=999 \
+        -Dsystem-uid-max=999 \
+        -Dsysvinit-path= \
+        -Dsysvrcnd-path= \
+        -Dtests=false \
+        -Dfuzz-tests=false \
+        -Dinstall-tests=false \
+        -Dlog-message-verification=disabled \
+        -Dsysupdated=disabled \
+        -Dtmpfiles=true \
+        -Dukify=disabled \
+        -Dbpf-framework=disabled \
+        -Dvmlinux-h=disabled \
+        -Dumount-path=/usr/bin/umount \
+        -Dxenctrl=disabled \
+        -Dmode=release \
+        -Ddev-kvm-mode=0660 \
+        -Dbuild.pkg_config_path=$LFS/host/lib/pkgconfig
+    ninja
+    popd
+
+    popd # systemd
+
+    post_build
+
+    popd # build
+}

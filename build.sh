@@ -218,6 +218,29 @@ build_package() {
     fi
 }
 
+build_host_package() {
+    local pkg="${1}"
+    local skip="${2}"
+    local fn="$(echo "build_host_${pkg}" | sed -e "s/-/_/g")"
+
+    if [ -f "packages/${pkg}/${pkg}.build" ]; then
+        source "packages/${pkg}/${pkg}.build"
+    else
+        echo "error: host package '${pkg}' is not defined" >&2
+        exit 1
+    fi
+
+    if ! declare -F "${fn}" >/dev/null; then
+        echo "error: host package '${pkg}' is not defined" >&2
+    fi
+
+    "${fn}" "$@"
+
+    if [ -z "$(cat package.log | grep "host_${pkg}")" ]; then
+        echo "host_${pkg}" >> package.log
+    fi
+}
+
 #
 # create the disk image
 #
@@ -290,8 +313,24 @@ main() {
             shift # drop 'build'
             local package="${1}"
             shift # drop package name
+            
+            local host=0
 
-            build_package $package $@
+            while (($#)); do
+                case "$1" in
+                    -h|--host)
+                        host=1
+                        shift
+                        ;;
+                esac
+            done
+
+            if [ "${host}" == "1" ]; then
+                build_host_package $package $@
+            else
+                build_package $package $@
+            fi
+
             ;;
 
         *)

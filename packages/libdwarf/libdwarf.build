@@ -1,0 +1,21 @@
+build_libdwarf() {
+    download_source https://github.com/davea42/libdwarf-code/releases/download/v2.1.0/libdwarf-2.1.0.tar.xz
+
+    pushd build
+
+    rm -rf libdwarf-2.1.0
+    tar xvf ../sources/libdwarf-2.1.0.tar.xz
+
+    setup_environment
+
+    pushd libdwarf-2.1.0
+    ./configure --prefix=/usr --includedir=/usr/include --with-sysroot=$LFS_SYSROOT
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    popd # libdwarf
+
+    post_build
+
+    popd # build
+}

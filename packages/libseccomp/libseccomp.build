@@ -1,0 +1,21 @@
+build_libseccomp() {
+    download_source https://github.com/seccomp/libseccomp/releases/download/v2.6.0/libseccomp-2.6.0.tar.gz
+
+    pushd build
+
+    rm -rf libseccomp-2.6.0
+    tar xvf ../sources/libseccomp-2.6.0.tar.gz
+
+    setup_environment
+
+    pushd libseccomp-2.6.0
+    ./configure --prefix=/usr
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    popd # libseccomp
+
+    post_build
+
+    popd # build
+}

@@ -1,0 +1,21 @@
+build_libgpg_error() {
+    download_source https://gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.55.tar.bz2
+
+    pushd build
+
+    rm -rf libgpg-error-1.55
+    tar xvf ../sources/libgpg-error-1.55.tar.bz2
+
+    setup_environment
+
+    pushd libgpg-error-1.55
+    ./configure --prefix=/usr
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    popd # libgpg-error
+
+    post_build
+
+    popd # build
+}

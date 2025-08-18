@@ -1,0 +1,23 @@
+build_libgcrypt() {
+    download_source https://gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.11.2.tar.bz2
+    
+    requires libgpg-error
+
+    pushd build
+
+    rm -rf libgcrypt-1.11.2
+    tar xvf ../sources/libgcrypt-1.11.2.tar.bz2
+    
+    setup_environment
+
+    pushd libgcrypt-1.11.2
+    ./configure --prefix=/usr
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    popd # libgcrypt
+
+    post_build
+
+    popd # build
+}

@@ -1,0 +1,21 @@
+build_libidn2() {
+    download_source https://ftp.gnu.org/gnu/libidn/libidn2-2.3.8.tar.gz
+
+    pushd build
+
+    rm -rf libidn2-2.3.8
+    tar xvf ../sources/libidn2-2.3.8.tar.gz
+
+    setup_environment
+
+    pushd libidn2-2.3.8
+    ./configure --prefix=/usr --without-included-libunistring
+    make
+    make DESTDIR=$LFS_SYSROOT install
+    make DESTDIR=$LFS_STAGING install
+    popd # libidn2-2.3.8
+
+    post_build
+
+    popd # build
+}

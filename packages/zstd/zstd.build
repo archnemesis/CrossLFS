@@ -1,0 +1,20 @@
+build_zstd() {
+    download_source https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz
+    
+    pushd build
+
+    rm -rf zstd-1.5.7
+    tar xvf ../sources/zstd-1.5.7.tar.gz
+
+    setup_environment
+
+    pushd zstd-1.5.7
+    make PREFIX=/usr
+    make PREFIX=/usr DESTDIR=$LFS_SYSROOT install
+    make PREFIX=/usr DESTDIR=$LFS_STAGING install
+    popd # zstd
+
+    post_build
+
+    popd # build
+}
